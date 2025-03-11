@@ -58,13 +58,12 @@ class Poll:
 
     def get_results(self):
         # Formats the results with percentages
-        results = "<br />".join(
+        results = f"{self.question}" + "\n".join(
             [
-                f"<tr><td>{choice}:</td> <td> {self.votes[i]}</td><td> {round(self.votes[i]/self.total if self.total else 0,3) * 100}%</td></tr>"
+                f"{choice}: {self.votes[i]}"
                 for i, choice in enumerate(self.choices)
             ]
         )
-        results = f"{self.question}: <br /> <table>" + results + "</table>"
         return results
 
     def close_poll(self):
