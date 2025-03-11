@@ -143,12 +143,13 @@ class PollPlugin(Plugin):
         else:
             await evt.reply("There is no active poll in this room", allow_html=True)
 
-    @poll.subcommand("close", help="Ends the poll")
+    @poll.subcommand("close", help="Ends the poll and prints out results")
     async def handler(self, evt: MessageEvent) -> None:
         await evt.mark_read()
         if self.hasActivePoll(evt.room_id):
+            poll = self.getPoll(evt.room_id)
             self.currentPolls[evt.room_id].close_poll()
-            await evt.reply("This poll is now over. Type !poll results to see the results.")
+            await evt.reply("This poll is now over. <br />" + poll.get_results(), allow_html=True)
         else:
             await evt.reply("There is no active poll in this room")
 
