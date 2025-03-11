@@ -16,22 +16,23 @@ Choice3
 
 '!poll results' - Displays the results from the poll
 
-'!poll close' - Ends the poll
+'!poll close' - Ends the poll and prints results
 
 Users vote by adding the matching emoji to the poll (i.e. if the first choice has a :thumbsup: then in order to pick that choice the user has to react with :thumbsup:)
 
-## Version 3.0.2 (forked)
+## Version 3.0.2 (Latest release)
  - Results can now be requested before the poll is closed
- - Result message is simplyfied to help with bridging to other messaging services
+ - Result message is simplified to help with bridging to other messaging services
+ - Closing the poll also prints results
+ - Bridging tested between signal and whatsapp
 
-## Version 3.0 (Latest release)
+## Older Releases:
+
+### Version 3.0
  - Made emoji options more accessible
  - Bot now reacts to itself with emoji options
  - The user can now define emoji options
  - User can define answers with line-breaks rather than quotes
-
-
-## Older Releases:
 
 ### Version 2.0
  - Changed voting format to reactions (instead of '!poll vote')
