@@ -10,8 +10,7 @@ import emoji as _emoji
 
 QUOTES_REGEX = r"\"?\s*?\""  # Regex to split string between quotes
 # [Octopus, Ghost, Robot, Okay Hand, Clapping Hands, Hundred, Pizza Slice, Taco, Bomb, Checquered Flag]
-REACTIONS = ["\U0001F44D", "\U0001F44E", "\U0001F419", "\U0001F47B", "\U0001F916", "\U0001F44C",
-             "\U0001F44F", "\U0001F4AF", "\U0001F355", "\U0001F32E", "\U0001F4A3", "\U0001F3C1"]
+REACTIONS = ["\U0001F44D", "\U0001F622", "\U0001F62E", "\U0001F602"]
 EMOJI_REGEX = r"^[\u2600-\u26FF\u2700-\u27BF\U0001F300-\U0001F5FF\U0001F600-\U0001F64F\U0001F680-\U0001F6FF\U0001F900-\U0001F9FF]"
 
 
@@ -24,19 +23,8 @@ class Poll:
         self.active = True  # Begins the poll
         self.total = 0
 
-        if emojis:
-            self.emojis = []
-            reactions_filtered = list(set(REACTIONS).difference(set(emojis)))
-            emojis_random = random.sample(
-                reactions_filtered, emojis.count(None))
-            for emoji in emojis:
-                if emoji:
-                    self.emojis.append(emoji)
-                else:
-                    self.emojis.append(emojis_random.pop())
-        else:
-            # Select a random assortment of emojis
-            self.emojis = random.sample(REACTIONS, len(choices))
+        self.emojis = REACTIONS[:len(choices)]
+        self.emoji_strings = [_emoji.demojize(emoji) for emoji in self.emojis]
 
     def vote(self, choice, user_id, event_id):
         self.votes[choice] += 1
@@ -120,6 +108,12 @@ class PollPlugin(Plugin):
         choices = setup[1:]
         if len(choices) <= 1:
             response = "You need to enter at least 2 choices."
+            await evt.reply(response, allow_html=True)
+            return
+        elif len(choices) > len(REACTIONS):
+            response = f"You can only enter up to {len(REACTIONS)} choices."
+            await evt.reply(response, allow_html=True)
+            return
         else:
             emojis = []
             r = re.compile(EMOJI_REGEX)
