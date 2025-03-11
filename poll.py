@@ -2,9 +2,10 @@ import re
 import random
 from typing import List, Tuple
 from mautrix.util.config import BaseProxyConfig, ConfigUpdateHelper
-from mautrix.types import (EventType, ReactionEvent)
+from mautrix.types import (EventType, ReactionEvent, RedactionEvent)
 from maubot import Plugin, MessageEvent
-from maubot.handlers import command
+from maubot.handlers import command, event
+import emoji as _emoji
 
 
 QUOTES_REGEX = r"\"?\s*?\""  # Regex to split string between quotes
@@ -157,11 +158,25 @@ class PollPlugin(Plugin):
                      field=lambda evt: evt.content.relates_to.key,
                      event_type=EventType.REACTION, msgtypes=None)
     async def get_react_vote(self, evt: ReactionEvent, _: Tuple[str]) -> None:
+        self.log.debug(f"received reaction: {evt}")
         # Is this on the correct message?
         if (evt.content.relates_to.event_id == self.currentPolls[evt.room_id].event_id):
-            # has the user already voted?
-            if not self.currentPolls[evt.room_id].hasVoted(evt.sender):
-                # Is this a possible choice?
-                if (evt.content.relates_to.key in self.currentPolls[evt.room_id].emojis):
-                    self.currentPolls[evt.room_id].vote(self.currentPolls[evt.room_id].emojis.index(
-                        evt.content.relates_to.key), evt.sender)  # Add vote/sender to poll
+            self.log.debug(f"received vote: {evt.content.relates_to.key} ({evt.content.relates_to.key.encode('utf-8')})")
+            # Is this a possible choice?
+            # Turn emojis into emoji shortcodes to avoid issues with emoji variants
+            emoji_shortcode = _emoji.demojize(evt.content.relates_to.key)
+            self.log.debug(f"short: {emoji_shortcode}")
+            if (emoji_shortcode in self.currentPolls[evt.room_id].emoji_strings):
+                self.log.debug(f"accepting emoji {evt.content.relates_to.key}")
+                self.currentPolls[evt.room_id].vote(self.currentPolls[evt.room_id].emoji_strings.index(
+                    emoji_shortcode), evt.sender, evt.event_id)  # Add vote/sender to poll
+            else:
+                self.log.debug(f"{emoji_shortcode} not in {self.currentPolls[evt.room_id].emoji_strings}")
+
+
+    @event.on(EventType.ROOM_REDACTION)
+    async def get_redact_vote(self, evt: RedactionEvent) -> None:
+        self.log.info("Redaction event data: %s", evt)
+        self.currentPolls[evt.room_id].redact_vote(evt.sender)
+
+
