@@ -20,7 +20,7 @@ class Poll:
         self.question = question
         self.choices = choices
         self.votes = [0] * len(choices)  # initialize all votes to zero
-        self.voters = []
+        self.voters = {}
         self.active = True  # Begins the poll
         self.total = 0
 
@@ -38,12 +38,22 @@ class Poll:
             # Select a random assortment of emojis
             self.emojis = random.sample(REACTIONS, len(choices))
 
-    def vote(self, choice, user_id):
-        # Adds a vote to the given choice
+    def vote(self, choice, user_id, event_id):
         self.votes[choice] += 1
         # Adds user to list of users who have already voted
-        self.voters.append(user_id)
+        if user_id in self.voters:
+            self.redact_vote(user_id)
+        self.voters[user_id] = (choice, event_id)
         self.total += 1
+
+    def redact_vote(self, user_id):
+        if user_id in self.voters:
+            choice, event_id = self.voters[user_id]
+            # Remove the vote
+            del self.voters[user_id]
+            self.votes[choice] -= 1
+            self.total -= 1
+
 
     def isAvailable(self, choice):
         # Checks if given choice is an option
