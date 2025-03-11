@@ -139,10 +139,7 @@ class PollPlugin(Plugin):
         await evt.mark_read()
         poll = self.getPoll(evt.room_id)
         if poll is not None:
-            if poll.isActive():
-                await evt.reply("Poll is active, please close the poll before asking for results.", allow_html=True)
-            else:
-                await evt.reply(poll.get_results(), allow_html=True)
+            await evt.reply(poll.get_results(), allow_html=True)
         else:
             await evt.reply("There is no active poll in this room", allow_html=True)
 
