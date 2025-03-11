@@ -1,7 +1,7 @@
-Archiving since Matrix/Element have had poll support for a few years now
-
 # Poll Maubot
-A plugin for [maubot](https://github.com/maubot/maubot) that creates a poll in a riot room and allows users to vote
+A plugin for [maubot](https://github.com/maubot/maubot) that creates a poll in a riot room and allows users to vote.
+Customized to ease bridging between different messaging services (i.e. between signal/whatsapp).
+
 
 ## Usage
 '!poll new  "Question" "Choice1" "Choice2" "Choice3"' - Creates a new poll with given (at least 1) choices
@@ -19,6 +19,10 @@ Choice3
 '!poll close' - Ends the poll
 
 Users vote by adding the matching emoji to the poll (i.e. if the first choice has a :thumbsup: then in order to pick that choice the user has to react with :thumbsup:)
+
+## Version 3.0.2 (forked)
+ - Results can now be requested before the poll is closed
+ - Result message is simplyfied to help with bridging to other messaging services
 
 ## Version 3.0 (Latest release)
  - Made emoji options more accessible
