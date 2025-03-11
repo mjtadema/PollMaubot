@@ -58,10 +58,11 @@ class Poll:
 
     def get_results(self):
         # Formats the results with percentages
-        results = f"{self.question}" + "\n".join(
+        results = f"{self.question}" + "<br />".join(
             [
                 f"{choice}: {self.votes[i]}"
-                for i, choice in enumerate(self.choices)
+                for i, choice in sorted(enumerate(self.choices),
+                                        key=lambda x: self.votes[x[0]], reverse=True)
             ]
         )
         return results
